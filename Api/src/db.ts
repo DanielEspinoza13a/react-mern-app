@@ -9,7 +9,7 @@ import config from "./config";
       useCreateIndex: true,
     };
     const db = await mongoose.connect(
-      `mongodb://${config.MONGO_HOST}/${config.MONGO_DATABASE}`,
+      `mongodb://127.0.0.1:27017/dani`,
       mongooseOptions
     );
 

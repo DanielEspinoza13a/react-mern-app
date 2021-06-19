@@ -34,7 +34,7 @@ export const getVideo: RequestHandler = async (req, res) => {
     const Gvideo = await video.findById(req.params.id);
 
     if (!Gvideo) {
-      return res.status(500).json({ msg: "not video found" });
+      return res.status(404).json({ msg: "not video found" });
     }
 
     return res.status(200).json(Gvideo);

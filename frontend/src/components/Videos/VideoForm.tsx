@@ -1,4 +1,11 @@
-import React, { ChangeEvent, FormEvent, useState, useEffect } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import { Video } from "./VideoInterface";
 import * as videoService from "./VideoService";
 import { toast } from "react-toastify";
@@ -14,42 +21,54 @@ const VideoForm = () => {
   const history = useHistory();
   const params = useParams<Params>();
 
-  const initialState = {
-    title: "",
-    description: "",
-    url: "",
-  };
+  const initialState = useMemo(
+    () => ({
+      title: "",
+      description: "",
+      url: "",
+    }),
+    []
+  );
 
   const [video, setVideo] = useState<Video>(initialState);
+  useEffect(() => {
+    console.log(video);
+  }, [video]);
 
   const handleInputChange = (e: InputChange) => {
     setVideo({ ...video, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    if (!params.id) {
-      await videoService.createVideo(video);
-      toast.success("New video added");
-      setVideo(initialState);
-    } else {
-      await videoService.updateVideo(params.id, video);
-    }
+      if (!params.id) {
+        await videoService.createVideo(video);
+        toast.success("New video added");
+      } else {
+        await videoService.updateVideo(params.id, video);
+      }
 
-    history.push("/");
-  };
+      history.push("/");
+    },
+    [history, params.id, video]
+  );
 
   const getVideo = async (id: string) => {
     const res = await videoService.getVideo(id);
     const { title, description, url } = res.data;
+    console.log("2");
     setVideo({ title, description, url });
   };
   useEffect(() => {
     if (params.id) {
       getVideo(params.id);
     }
-  });
+    return () => {
+      setVideo(initialState);
+    };
+  }, [initialState, params.id]);
 
   return (
     <div className="row">
@@ -72,7 +91,7 @@ const VideoForm = () => {
               </div>
               <div className="form-group">
                 <input
-                  type="text"
+                  type="url"
                   name="url"
                   placeholder="https://somesite.com"
                   className="form-control"

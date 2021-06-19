@@ -12,7 +12,7 @@ export const createVideo = async (video: Video) => {
 };
 
 export const getVideo = async (id: string) => {
-  return await axios.get<Video>(`${url}/videos/${id}`);
+  return axios.get<Video>(`${url}/videos/${id}`);
 };
 
 export const updateVideo = async (id: string, video: Video) => {
